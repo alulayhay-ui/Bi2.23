@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Born in 2002：Level 23 ─ 儀式登入系統</title>
+  <style>
+    :root{
+      --accent:#5ba8ff;
+      --accent-soft:#7ab6ff;
+      --gold:#ffc857;
+      --bg-deep:#050816;
+    }
+    *{box-sizing:border-box;}
+    html,body{
+      margin:0;padding:0;
+      height:100%;
+      font-family:"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      background:radial-gradient(circle at top,#1b2742 0,#050816 45%,#000 100%);
+      color:#d6e2ff;
+    }
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      overflow:hidden;
+      position:relative;
+    }
+    /* 星空背景 */
+    .bg-stars{
+      position:fixed;inset:0;
+      background:radial-gradient(circle,rgba(255,255,255,.24) 1px,transparent 1px);
+      background-size:3px 3px;
+      opacity:.22;
+      animation:starMove 40s linear infinite;
+      pointer-events:none;
+      z-index:0;
+    }
+    @keyframes starMove{from{transform:translateY(0);}to{transform:translateY(-900px);}}
+    .bg-tribal{
+      position:fixed;inset:0;
+      background:
+        radial-gradient(circle at 0 0,rgba(91,228,255,.3),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(255,200,87,.35),transparent 55%);
+      mix-blend-mode:screen;
+      opacity:.18;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    /* 主容器 */
+    .app-wrap{
+      position:relative;
+      z-index:2;
+      width:100%;
+      max-width:980px;
+      display:flex;
+      gap:24px;
+    }
+    @media(max-width:900px){
+      body{align-items:flex-start;}
+      .app-wrap{
+        flex-direction:column;
+        margin-top:22px;
+        max-width:100%;
+      }
+    }
+
+    /* 左側角色預覽卡（靈體風） */
+    .preview-column{
+      flex:0 0 320px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    @media(max-width:900px){
+      .preview-column{
+        order:-1;
+        flex:0 0 auto;
+      }
+    }
+    .spirit-card{
+      position:relative;
+      width:100%;
+      max-width:320px;
+      aspect-ratio:3/4;
+      border-radius:20px;
+      background:radial-gradient(circle at top,#1b2840 0,rgba(5,8,22,.98) 45%,rgba(0,0,0,.98) 100%);
+      overflow:hidden;
+      border:1px solid rgba(123,182,255,.55);
+      box-shadow:
+        0 0 24px rgba(0,0,0,.9),
+        0 0 32px rgba(91,228,255,.38);
+    }
+    .spirit-card::before{
+      content:"LEVEL 23";
+      position:absolute;
+      top:8px;left:14px;
+      font-size:11px;
+      letter-spacing:2px;
+      opacity:.58;
+      color:var(--accent-soft);
+    }
+    .spirit-orb{
+      position:absolute;
+      inset:-20%;
+      background:
+        radial-gradient(circle at 20% 0,rgba(123,182,255,.58),transparent 55%),
+        radial-gradient(circle at 80% 100%,rgba(255,200,135,.48),transparent 60%);
+      mix-blend-mode:screen;
+      opacity:.75;
+      filter:blur(3px);
+      animation:spiritWave 9s ease-in-out infinite alternate;
+    }
+    @keyframes spiritWave{
+      0%{transform:translate3d(-8px,0,0) scale(1);}
+      50%{transform:translate3d(4px,-6px,0) scale(1.04);}
+      100%{transform:translate3d(6px,4px,0) scale(1.02);}
+    }
+    .spirit-portrait-wrap{
+      position:absolute;
+      inset:18% 12% 18% 12%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .spirit-portrait{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      filter:
+        grayscale(1)
+        contrast(1.2)
+        brightness(1.3)
+        drop-shadow(0 0 18px rgba(123,182,255,.8));
+      opacity:.82;
+      mix-blend-mode:screen;
+    }
+    .spirit-glow-ring{
+      position:absolute;
+      inset:14%;
+      border-radius:26px;
+      border:1px solid rgba(123,182,255,.55);
+      box-shadow:
+        0 0 30px rgba(123,182,255,.65),
+        0 0 40px rgba(255,200,135,.3);
+      opacity:.85;
+      animation:spiritRing 5.5s ease-in-out infinite;
+    }
+    @keyframes spiritRing{
+      0%,100%{transform:scale(0.98);opacity:.7;}
+      50%{transform:scale(1.02);opacity:1;}
+    }
+    .spirit-particles{
+      position:absolute;
+      inset:0;
+      background-image:
+        radial-gradient(circle,rgba(255,255,255,.7) 1px,transparent 1px),
+        radial-gradient(circle,rgba(123,182,255,.8) 1px,transparent 1px);
+      background-size:5px 5px,7px 7px;
+      mix-blend-mode:screen;
+      opacity:.25;
+      animation:particleDrift 18s linear infinite;
+    }
+    @keyframes particleDrift{
+      0%{transform:translate3d(0,0,0);}
+      100%{transform:translate3d(-40px,-40px,0);}
+    }
+    .spirit-meta{
+      position:absolute;
+      bottom:10px;
+      left:12px;
+      right:12px;
+      font-size:11px;
+      display:flex;
+      justify-content:space-between;
+      gap:6px;
+      opacity:.9;
+    }
+    .spirit-meta span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+    /* 右側：各畫面（Intro / Login / Create / EntryCard） */
+    .screen-column{
+      flex:1;
+      position:relative;
+    }
+    .screen{
+      display:none;
+      background:rgba(10,13,30,.78);
+      border-radius:18px;
+      padding:20px 18px 18px;
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow:0 0 26px rgba(0,0,0,.7);
+      backdrop-filter:blur(14px);
+    }
+    .screen.active{display:block;}
+
+    .screen-title{
+      font-size:20px;
+      margin:0 0 4px;
+      color:var(--accent-soft);
+      text-shadow:0 0 10px #3f8bff;
+    }
+    .screen-sub{
+      font-size:13px;
+      opacity:.92;
+      margin-bottom:10px;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      margin:6px 0 3px;
+      opacity:.88;
+    }
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select{
+      width:100%;
+      padding:9px 10px;
+      border-radius:9px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.32);
+      color:#fff;
+      font-size:13px;
+      outline:none;
+    }
+    textarea{min-height:70px;resize:vertical;}
+    input[readonly]{
+      opacity:.7;
+      background:rgba(255,255,255,.04);
+    }
+
+    .row-2{
+      display:flex;
+      gap:8px;
+    }
+    @media(max-width:600px){
+      .row-2{flex-direction:column;}
+    }
+
+    button{
+      border:none;
+      border-radius:999px;
+      padding:10px 16px;
+      font-size:14px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#6ab5ff,#ffc857);
+      color:#050816;
+      box-shadow:0 0 16px rgba(111,189,255,.7);
+      width:100%;
+      margin-top:10px;
+    }
+    .btn-secondary{
+      background:rgba(255,255,255,.06);
+      color:#e2ebff;
+      border:1px solid rgba(255,255,255,.25);
+    }
+
+    .small-hint{
+      font-size:11px;
+      opacity:.78;
+      margin-top:6px;
+    }
+
+    /* Loading 條 */
+    .loading-bar{
+      margin-top:10px;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.09);
+      overflow:hidden;
+      display:none;
+    }
+    .loading-fill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#5be4ff,#ffc857);
+      transition:width .35s;
+    }
+    .error-msg{
+      color:#ff6b7a;
+      font-size:12px;
+      margin-top:6px;
+      display:none;
+    }
+
+    /* 能力值小區塊 */
+    .stats-row{
+      display:flex;
+      gap:8px;
+      margin-top:4px;
+    }
+    .stat-box{
+      flex:1;
+    }
+    .stat-box label{
+      font-size:11px;
+      margin-bottom:2px;
+    }
+    .stat-box input{
+      text-align:center;
+    }
+
+    /* 創角完成 HUD */
+    .completion-overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(circle at top,rgba(8,12,30,.92),rgba(2,3,10,.96));
+      z-index:20;
+    }
+    .completion-panel{
+      position:relative;
+      width:100%;
+      max-width:420px;
+      border-radius:20px;
+      padding:18px 16px 14px;
+      border:1px solid rgba(255,200,135,.9);
+      box-shadow:0 0 26px rgba(255,200,135,.7),0 0 32px rgba(91,228,255,.7);
+      background:linear-gradient(145deg,rgba(5,8,22,.96),rgba(10,18,40,.98));
+    }
+    .completion-avatar-wrap{
+      width:90px;height:90px;
+      border-radius:50%;
+      margin:0 auto 10px;
+      position:relative;
+      overflow:hidden;
+      border:2px solid rgba(255,200,135,.95);
+      box-shadow:0 0 18px rgba(255,200,135,.9);
+    }
+    .completion-avatar-wrap img{
+      width:100%;height:100%;object-fit:cover;
+    }
+    .completion-avatar-glow{
+      position:absolute;inset:-20%;
+      background:radial-gradient(circle,rgba(255,200,135,.85),transparent 60%);
+      mix-blend-mode:screen;
+      opacity:.7;
+      pointer-events:none;
+      animation:completionGlow 3s ease-in-out infinite;
+    }
+    @keyframes completionGlow{
+      0%,100%{opacity:.45;transform:scale(1);}
+      50%{opacity:1;transform:scale(1.08);}
+    }
+    .completion-title{
+      text-align:center;
+      font-size:18px;
+      margin-bottom:2px;
+      color:#ffe9b0;
+    }
+    .completion-sub{
+      text-align:center;
+      font-size:12px;
+      opacity:.9;
+      margin-bottom:8px;
+    }
+    .completion-mini-card{
+      margin-top:6px;
+      padding:8px 10px 6px;
+      border-radius:12px;
+      border:1px solid rgba(255,200,135,.9);
+      background:linear-gradient(135deg,rgba(10,14,32,.98),rgba(4,6,20,.98));
+      box-shadow:0 0 14px rgba(255,200,135,.65);
+      font-size:12px;
+    }
+    .cmc-title{
+      font-size:11px;
+      letter-spacing:1px;
+      opacity:.82;
+      margin-bottom:4px;
+      color:#ffe9b0;
+    }
+    .cmc-line{
+      display:flex;
+      justify-content:space-between;
+      gap:6px;
+      margin:1px 0;
+    }
+    .cmc-label{opacity:.78;}
+    .cmc-value{text-align:right;font-weight:500;}
+    .completion-line{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:12px;
+      margin-top:4px;
+    }
+    .completion-line span:last-child{text-align:right;}
+    .completion-reminder{
+      margin-top:8px;
+      padding:8px 8px 6px;
+      border-radius:10px;
+      border:1px solid rgba(123,182,255,.6);
+      background:rgba(4,8,20,.92);
+      font-size:11px;
+    }
+    .completion-actions{
+      margin-top:10px;
+      text-align:center;
+    }
+    .completion-btn{
+      padding:7px 16px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      font-size:13px;
+      cursor:pointer;
+    }
+    .completion-btn-primary{
+      background:linear-gradient(135deg,#6ab5ff,#ffc857);
+      color:#050816;
+      border:none;
+    }
+
+    /* Toast */
+    #toast{
+      position:fixed;
+      bottom:18px;left:50%;
+      transform:translateX(-50%);
+      background:rgba(14,20,40,.96);
+      border-radius:999px;
+      padding:8px 16px;
+      font-size:12px;
+      border:1px solid rgba(123,182,255,.7);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .25s,transform .25s;
+      z-index:30;
+    }
+    #toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-4px);
+    }
+
+    /* 角色卡頁面樣式 */
+    .entry-card{
+      padding:20px 18px 16px;
+      border-radius:20px;
+      background:linear-gradient(140deg,rgba(10,13,30,.96),rgba(4,5,18,.98));
+      border:1px solid rgba(255,200,87,.9);
+      box-shadow:0 0 26px rgba(0,0,0,.85),0 0 28px rgba(255,200,87,.55);
+    }
+    .entry-card-title{
+      font-size:20px;
+      color:#fff7dd;
+      text-align:center;
+      margin:0 0 2px;
+      text-shadow:0 0 10px rgba(255,200,87,.7),0 0 16px rgba(91,228,255,.7);
+    }
+    .entry-card-sub{
+      font-size:12px;
+      text-align:center;
+      opacity:.9;
+      margin-bottom:10px;
+    }
+    .entry-card-tagline{
+      font-size:11px;
+      text-align:center;
+      opacity:.85;
+      margin-bottom:10px;
+    }
+    .divider{
+      height:1px;
+      margin:8px 0 10px;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+    }
+    .entry-row{
+      display:flex;
+      justify-content:space-between;
+      gap:6px;
+      margin:2px 0;
+      font-size:13px;
+    }
+    .entry-label{opacity:.78;}
+    .entry-value{text-align:right;font-weight:600;}
+    .role-badge,.element-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.35);
+      font-size:11px;
+      margin-top:2px;
+    }
+    .element-badge{
+      border-color:rgba(91,228,255,.7);
+    }
+    .entry-reminders{
+      margin-top:12px;
+      padding:10px 10px 6px;
+      border-radius:12px;
+      background:rgba(5,10,26,.9);
+      border:1px solid rgba(123,182,255,.5);
+      font-size:12px;
+    }
+    .entry-reminders-title{
+      font-size:12px;
+      font-weight:600;
+      margin-bottom:4px;
+      color:#5be4ff;
+    }
+    .entry-reminders ul{
+      padding-left:18px;
+      margin:4px 0;
+    }
+    .entry-reminders li{margin-bottom:2px;}
+    .entry-hint{
+      margin-top:8px;
+      font-size:11px;
+      text-align:center;
+      opacity:.8;
+    }
+    .actions{
+      margin-top:10px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      font-size:12px;
+      flex-wrap:wrap;
+    }
+    .link-btn{
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(123,182,255,.7);
+      background:rgba(4,8,20,.9);
+      color:#e7f1ff;
+      text-decoration:none;
+      cursor:pointer;
+      font-size:12px;
+    }
+
+    /* IG 按鈕 */
+    .link-btn-ig{
+      border-color:rgba(255,111,181,.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-stars"></div>
+  <div class="bg-tribal"></div>
+
+  <div class="app-wrap">
+    <!-- 左：靈體風預設立繪 -->
+    <div class="preview-column">
+      <div class="spirit-card">
+        <div class="spirit-orb"></div>
+        <div class="spirit-portrait-wrap">
+          <!-- 若沒有上傳頭像，就顯示靈體預設 -->
+          <img id="spiritPortrait" class="spirit-portrait" src="assets/characters/default.png" alt="spirit portrait" />
+        </div>
+        <div class="spirit-glow-ring"></div>
+        <div class="spirit-particles"></div>
+        <div class="spirit-meta">
+          <span id="spiritName">未命名角色</span>
+          <span id="spiritElement">無元素</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：各畫面 -->
+    <div class="screen-column">
+      <!-- Intro 畫面 -->
+      <section id="screen-intro" class="screen active">
+        <h1 class="screen-title">Born in 2002：Level 23</h1>
+        <div class="screen-sub">
+          歡迎來到 Alulayhay．Sawawan 鄭彥軍的 23 歲生日儀式登入系統。<br/>
+          儀式集合時間地點：<b>12/20 (六) 晚上 10：30　中壢好樂迪 KTV</b>
+        </div>
+        <button id="btnStartRitual" class="btn-primary">開始登入儀式</button>
+        <div class="small-hint">點擊後進入登入畫面，完成祖靈認證與角色創建。</div>
+      </section>
+
+      <!-- Login 畫面 -->
+      <section id="screen-login" class="screen">
+        <h1 class="screen-title">LEVEL 23 ENTRY SYSTEM</h1>
+        <div class="screen-sub">祖靈已開啟儀式之門，請完成登入。</div>
+
+        <label>請上傳玩家角色立繪（你的照片，會顯示為靈體風角色）</label>
+        <input type="file" id="avatarInput" accept="image/*" />
+
+        <label for="loginName">玩家姓名</label>
+        <input id="loginName" type="text" placeholder="你的名字" />
+
+        <label for="loginPhone">聯絡電話</label>
+        <input id="loginPhone" type="text" placeholder="聯絡方式（手機 / LINE）" />
+
+        <button id="btnLogin" class="btn-primary">提交登入資訊</button>
+
+        <div id="loginLoading" class="loading-bar">
+          <div class="loading-fill" id="loginLoadingFill"></div>
+        </div>
+        <div id="loginError" class="error-msg">電話格式錯誤，請確認後再試。</div>
+
+        <div class="small-hint">
+          登入成功後將進入角色創建畫面，並自動帶入你的姓名與聯絡方式。
+        </div>
+      </section>
+
+      <!-- 角色創建畫面 -->
+      <section id="screen-create" class="screen">
+        <h1 class="screen-title">創建角色 ─ Level 23 儀式</h1>
+        <div class="screen-sub">請為這次的你設定一個專屬角色，資料也會送到表單以方便聯絡與記錄。</div>
+
+        <form id="createForm">
+          <div class="row-2">
+            <div style="flex:1;">
+              <label>玩家姓名</label>
+              <input id="playerName" type="text" readonly />
+            </div>
+            <div style="flex:1;">
+              <label>聯絡電話</label>
+              <input id="playerPhone" type="text" readonly />
+            </div>
+          </div>
+
+          <label>角色名稱</label>
+          <input id="charName" type="text" placeholder="例：靈火釀者、星光旅人..." />
+
+          <label>部落 / 來自哪裡</label>
+          <input id="tribe" type="text" placeholder="例：卑南族．初鹿 / 台中 / 中壢..." />
+
+          <label>職業 / 身分</label>
+          <select id="role">
+            <option value="">請選擇</option>
+            <option value="釀酒師 Brewer" style="color:#ffc857;">釀酒師 Brewer</option>
+            <option value="舞者 Dancer" style="color:#ff80c8;">舞者 Dancer</option>
+            <option value="守護者 Guardian" style="color:#5be4ff;">守護者 Guardian</option>
+            <option value="獵人 Hunter" style="color:#78e38f;">獵人 Hunter</option>
+            <option value="治療者 Healer" style="color:#b6ffce;">治療者 Healer</option>
+            <option value="策士 Strategist" style="color:#c9a4ff;">策士 Strategist</option>
+            <option value="旅人 Traveler" style="color:#ffb480;">旅人 Traveler</option>
+            <option value="自由客 Free Spirit" style="color:#7af2ff;">自由客 Free Spirit</option>
+            <option value="其他 Custom" style="color:#d0d5e5;">其他 Custom</option>
+          </select>
+
+          <label>元素屬性</label>
+          <select id="element">
+            <option value="">請選擇</option>
+            <option value="土・土地 Earth" style="color:#c8a15b;">土・土地 Earth</option>
+            <option value="火・釀酒 Fire" style="color:#ff6b6b;">火・釀酒 Fire</option>
+            <option value="風・舞蹈 Wind" style="color:#7fd5ff;">風・舞蹈 Wind</option>
+            <option value="水・情感 Water" style="color:#4aaeff;">水・情感 Water</option>
+            <option value="星・夢想 Star" style="color:#ffe27a;">星・夢想 Star</option>
+            <option value="影・沉思 Shadow" style="color:#a18bff;">影・沉思 Shadow</option>
+          </select>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <label>力量 STR</label>
+              <input id="statStr" type="number" min="1" max="10" value="5" />
+            </div>
+            <div class="stat-box">
+              <label>智慧 INT</label>
+              <input id="statInt" type="number" min="1" max="10" value="5" />
+            </div>
+            <div class="stat-box">
+              <label>魅力 CHA</label>
+              <input id="statCha" type="number" min="1" max="10" value="5" />
+            </div>
+            <div class="stat-box">
+              <label>幸運 LUCK</label>
+              <input id="statLuck" type="number" min="1" max="10" value="5" />
+            </div>
+          </div>
+
+          <label>想說的話 / 給壽星的訊息</label>
+          <textarea id="message" placeholder="寫下一句想在當天或之後對壽星說的話吧～"></textarea>
+
+          <button type="submit" class="btn-primary">儲存角色資訊</button>
+        </form>
+
+        <div class="small-hint">
+          系統會將角色資訊送到 Google 表單，也會存在本機方便之後生成圖鑑與入場核對。
+        </div>
+      </section>
+
+      <!-- 角色卡頁 -->
+      <section id="screen-entry-card" class="screen">
+        <div class="entry-card" id="entryCard">
+          <h1 class="entry-card-title">Born in 2002：Level 23</h1>
+          <div class="entry-card-sub">入場角色卡 ENTRY PASS</div>
+          <div class="entry-card-tagline">
+            請將此畫面截圖儲存到相簿，入場報到時出示給工作人員。
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="entry-row">
+            <div class="entry-label">角色名稱：</div>
+            <div class="entry-value" id="cardCharName">─</div>
+          </div>
+          <div class="entry-row">
+            <div class="entry-label">玩家姓名：</div>
+            <div class="entry-value" id="cardPlayerName">─</div>
+          </div>
+          <div class="entry-row">
+            <div class="entry-label">來自哪裡：</div>
+            <div class="entry-value" id="cardTribe">─</div>
+          </div>
+
+          <div class="entry-row">
+            <div class="entry-label">職業 / 身分：</div>
+            <div class="entry-value"><span class="role-badge" id="cardRole">─</span></div>
+          </div>
+          <div class="entry-row">
+            <div class="entry-label">元素屬性：</div>
+            <div class="entry-value"><span class="element-badge" id="cardElement">─</span></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="entry-reminders">
+            <div class="entry-reminders-title">集合時間地點 / REMINDER</div>
+            <ul>
+              <li>集合時間地點：12/20 (六)晚上 10：30　中壢好樂迪 KTV</li>
+              <li>理性飲酒，喝酒不開車，開車不喝酒！</li>
+              <li>喝酒唱歌要帶錢！</li>
+            </ul>
+          </div>
+
+          <div class="entry-hint">
+            建議操作：在手機上長按截圖或使用螢幕截圖功能，將此角色卡存到相簿方便入場核對。
+          </div>
+
+          <div class="actions">
+            <button id="btnBackToCreate" class="link-btn">← 回到角色創建</button>
+            <a href="https://www.instagram.com/allhsww/?hl=zh-tw" target="_blank" class="link-btn link-btn-ig">
+              IG｜有問題私訊
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- 創角完成 HUD -->
+  <div class="completion-overlay" id="completionOverlay">
+    <div class="completion-panel">
+      <div class="completion-avatar-wrap">
+        <div class="completion-avatar-glow"></div>
+        <img id="completionAvatar" src="assets/characters/default.png" alt="avatar" />
+      </div>
+
+      <div class="completion-title">創角完成</div>
+      <div class="completion-sub">你的角色已成功登入 Level 23 儀式。</div>
+
+      <div class="completion-mini-card" id="completionMiniCard">
+        <div class="cmc-title">入場角色卡預覽</div>
+        <div class="cmc-line">
+          <span class="cmc-label">角色：</span><span class="cmc-value" id="cmcCharName">─</span>
+        </div>
+        <div class="cmc-line">
+          <span class="cmc-label">職業：</span><span class="cmc-value" id="cmcRole">─</span>
+        </div>
+        <div class="cmc-line">
+          <span class="cmc-label">元素：</span><span class="cmc-value" id="cmcElement">─</span>
+        </div>
+        <div class="cmc-line">
+          <span class="cmc-label">來自：</span><span class="cmc-value" id="cmcTribe">─</span>
+        </div>
+      </div>
+
+      <div class="completion-line">
+        <span>STR / INT / CHA / LUCK：</span>
+        <span>
+          <span id="cStr">-</span> /
+          <span id="cInt">-</span> /
+          <span id="cCha">-</span> /
+          <span id="cLuck">-</span>
+        </span>
+      </div>
+
+      <div class="completion-reminder">
+        集合時間地點：12/20 (六)晚上 10：30　中壢好樂迪 KTV。<br/>
+        理性飲酒，喝酒不開車，開車不喝酒！喝酒唱歌要帶錢！
+      </div>
+
+      <div class="completion-actions">
+        <button class="completion-btn completion-btn-primary" id="goEntryCardBtn">
+          查看角色卡
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔊 背景音樂：同一頁 SPA，不會因畫面切換而中斷 -->
+  <audio id="bgm" src="assets/music/bg.mp3" loop playsinline></audio>
+
+  <script>
+    // === 基本工具 ===
+    function showScreen(id){
+      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+      const el=document.getElementById(id);
+      if(el) el.classList.add("active");
+    }
+    function showToast(msg){
+      const t=document.getElementById("toast");
+      t.textContent=msg;
+      t.classList.add("show");
+      setTimeout(()=>t.classList.remove("show"),2000);
+    }
+
+    // === 全域狀態 ===
+    const appState={
+      avatarDataUrl:null,
+      playerName:"",
+      playerPhone:"",
+      lastCharacter:null
+    };
+
+    // === 靈體立繪更新 ===
+    const spiritPortrait=document.getElementById("spiritPortrait");
+    const spiritName=document.getElementById("spiritName");
+    const spiritElement=document.getElementById("spiritElement");
+
+    function updateSpiritPreviewFromForm(){
+      const cn=document.getElementById("charName").value.trim();
+      const el=document.getElementById("element").value.trim();
+      spiritName.textContent=cn||"未命名角色";
+      spiritElement.textContent=el||"無元素";
+    }
+
+    // === Intro → Login ===
+    document.getElementById("btnStartRitual").addEventListener("click",()=>{
+      showScreen("screen-login");
+    });
+
+    // === Avatar 上傳 → 變成靈體肖像 ===
+    const avatarInput=document.getElementById("avatarInput");
+    if(avatarInput&&spiritPortrait){
+      avatarInput.addEventListener("change",e=>{
+        const f=e.target.files&&e.target.files[0];
+        if(!f) return;
+        const reader=new FileReader();
+        reader.onload=ev=>{
+          const dataUrl=ev.target.result;
+          appState.avatarDataUrl=dataUrl;
+          spiritPortrait.src=dataUrl;
+          try{sessionStorage.setItem("playerAvatar",dataUrl);}catch(err){}
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    // 如果之前登入過，嘗試載入頭像
+    const storedAvatar=sessionStorage.getItem("playerAvatar");
+    if(storedAvatar){
+      appState.avatarDataUrl=storedAvatar;
+      spiritPortrait.src=storedAvatar;
+    }
+
+    // === Login 邏輯 ===
+    const loginName=document.getElementById("loginName");
+    const loginPhone=document.getElementById("loginPhone");
+    const btnLogin=document.getElementById("btnLogin");
+    const loginLoading=document.getElementById("loginLoading");
+    const loginLoadingFill=document.getElementById("loginLoadingFill");
+    const loginError=document.getElementById("loginError");
+
+    btnLogin.addEventListener("click",()=>{
+      loginError.style.display="none";
+      const name=loginName.value.trim();
+      const phone=loginPhone.value.trim();
+      const digits=phone.replace(/\D/g,"");
+
+      if(!name||digits.length<8){
+        loginError.style.display="block";
+        return;
+      }
+
+      loginLoading.style.display="block";
+      loginLoadingFill.style.width="35%";
+
+      setTimeout(()=>{loginLoadingFill.style.width="87%";},300);
+
+      setTimeout(()=>{
+        loginLoadingFill.style.width="100%";
+        setTimeout(()=>{
+          loginLoading.style.display="none";
+          // 儲存狀態
+          appState.playerName=name;
+          appState.playerPhone=phone;
+          sessionStorage.setItem("playerName",name);
+          sessionStorage.setItem("playerPhone",phone);
+
+          alert("祖靈已接受你的登入。請前往創建角色。");
+          // 帶入創角頁
+          document.getElementById("playerName").value=name;
+          document.getElementById("playerPhone").value=phone;
+          showScreen("screen-create");
+        },500);
+      },900);
+    });
+
+    // 若之前登入過，預填
+    const prevName=sessionStorage.getItem("playerName");
+    const prevPhone=sessionStorage.getItem("playerPhone");
+    if(prevName) loginName.value=prevName;
+    if(prevPhone) loginPhone.value=prevPhone;
+
+    // === 創角表單 ===
+    const form=document.getElementById("createForm");
+    const fields={
+      playerName:document.getElementById("playerName"),
+      playerPhone:document.getElementById("playerPhone"),
+      charName:document.getElementById("charName"),
+      tribe:document.getElementById("tribe"),
+      role:document.getElementById("role"),
+      element:document.getElementById("element"),
+      str:document.getElementById("statStr"),
+      int:document.getElementById("statInt"),
+      cha:document.getElementById("statCha"),
+      luck:document.getElementById("statLuck"),
+      message:document.getElementById("message")
+    };
+
+    // 即時更新靈體卡資訊
+    ["charName","element"].forEach(id=>{
+      document.getElementById(id).addEventListener("input",updateSpiritPreviewFromForm);
+    });
+
+    // Google Form 設定
+    const GOOGLE_FORM_URL="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfV50KRQIQW5MzlvodEHaNSRWxAbr9UNhioqpqRuA9ZftYbCg/formResponse";
+    const GOOGLE_FIELDS={
+      playerName:"entry.1692967079",
+      playerPhone:"entry.1724405603",
+      charName:"entry.1815456712",
+      tribe:"entry.70379778",
+      role:"entry.71969897",
+      element:"entry.227903663",
+      str:"entry.1290922171",
+      int:"entry.557939827",
+      cha:"entry.1703247253",
+      luck:"entry.1483548557",
+      message:"entry.232807868"
+    };
+
+    async function submitToGoogle(data){
+      const fd=new FormData();
+      fd.append(GOOGLE_FIELDS.playerName,data.playerName||"");
+      fd.append(GOOGLE_FIELDS.playerPhone,data.playerPhone||"");
+      fd.append(GOOGLE_FIELDS.charName,data.charName||"");
+      fd.append(GOOGLE_FIELDS.tribe,data.tribe||"");
+      fd.append(GOOGLE_FIELDS.role,data.role||"");
+      fd.append(GOOGLE_FIELDS.element,data.element||"");
+      fd.append(GOOGLE_FIELDS.str,data.stats.str||"");
+      fd.append(GOOGLE_FIELDS.int,data.stats.int||"");
+      fd.append(GOOGLE_FIELDS.cha,data.stats.cha||"");
+      fd.append(GOOGLE_FIELDS.luck,data.stats.luck||"");
+      fd.append(GOOGLE_FIELDS.message,data.message||"");
+
+      try{
+        await fetch(GOOGLE_FORM_URL,{
+          method:"POST",
+          body:fd,
+          mode:"no-cors"
+        });
+      }catch(e){
+        console.warn("送出 Google 表單失敗（前端允許忽略）",e);
+      }
+    }
+
+    form.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const data={
+        playerName:fields.playerName.value.trim(),
+        playerPhone:fields.playerPhone.value.trim(),
+        charName:fields.charName.value.trim(),
+        tribe:fields.tribe.value.trim(),
+        role:fields.role.value.trim(),
+        element:fields.element.value.trim(),
+        stats:{
+          str:fields.str.value||"",
+          int:fields.int.value||"",
+          cha:fields.cha.value||"",
+          luck:fields.luck.value||""
+        },
+        message:fields.message.value.trim()
+      };
+
+      // 存在 localStorage：列表 + 最後角色
+      const list=JSON.parse(localStorage.getItem("level23Characters")||"[]");
+      list.push(data);
+      localStorage.setItem("level23Characters",JSON.stringify(list));
+      localStorage.setItem("level23LastCharacter",JSON.stringify(data));
+
+      await submitToGoogle(data);
+      showToast("角色資訊已儲存 ✔");
+      showCompletion(data);
+    });
+
+    // === 創角完成 HUD ===
+    function showCompletion(data){
+      const overlay=document.getElementById("completionOverlay");
+      if(!overlay) return;
+
+      document.getElementById("cStr").textContent=data.stats.str||"-";
+      document.getElementById("cInt").textContent=data.stats.int||"-";
+      document.getElementById("cCha").textContent=data.stats.cha||"-";
+      document.getElementById("cLuck").textContent=data.stats.luck||"-";
+
+      const miniName=document.getElementById("cmcCharName");
+      const miniRole=document.getElementById("cmcRole");
+      const miniElement=document.getElementById("cmcElement");
+      const miniTribe=document.getElementById("cmcTribe");
+      if(miniName) miniName.textContent=data.charName||"未命名角色";
+      if(miniRole) miniRole.textContent=data.role||"未設定職業";
+      if(miniElement) miniElement.textContent=data.element||"─";
+      if(miniTribe) miniTribe.textContent=data.tribe||"─";
+
+      const avatarImg=document.getElementById("completionAvatar");
+      if(avatarImg){
+        const storedAvatar=appState.avatarDataUrl||sessionStorage.getItem("playerAvatar");
+        if(storedAvatar) avatarImg.src=storedAvatar;
+      }
+
+      const role=data.role||"";
+      const element=data.element||"";
+      let border="#ffc857";
+      let glow="rgba(255,200,135,.7)";
+
+      if(element.includes("火")){border="#ff6b6b";glow="rgba(255,107,107,.75)";}
+      else if(element.includes("水")){border="#4aaeff";glow="rgba(74,174,255,.75)";}
+      else if(element.includes("風")){border="#7fd5ff";glow="rgba(127,213,255,.75)";}
+      else if(element.includes("土")){border="#c8a15b";glow="rgba(200,161,91,.75)";}
+      else if(element.includes("星")){border="#ffe27a";glow="rgba(255,226,122,.8)";}
+      else if(element.includes("影")){border="#a18bff";glow="rgba(161,139,255,.75)";}
+
+      if(role.includes("釀酒師")) border="#ffc857";
+      else if(role.includes("舞者")) border="#ff80c8";
+      else if(role.includes("守護者")) border="#5be4ff";
+      else if(role.includes("獵人")) border="#78e38f";
+      else if(role.includes("治療者")) border="#b6ffce";
+      else if(role.includes("策士")) border="#c9a4ff";
+      else if(role.includes("旅人")) border="#ffb480";
+      else if(role.includes("自由客")) border="#7af2ff";
+
+      const panel=document.querySelector(".completion-panel");
+      const miniCard=document.getElementById("completionMiniCard");
+      if(panel){
+        panel.style.borderColor=border;
+        panel.style.boxShadow=`0 0 26px ${glow},0 0 34px ${glow}`;
+      }
+      if(miniCard){
+        miniCard.style.borderColor=border;
+        miniCard.style.boxShadow=`0 0 18px ${glow}`;
+      }
+
+      overlay.style.display="flex";
+    }
+
+    document.getElementById("goEntryCardBtn").addEventListener("click",()=>{
+      document.getElementById("completionOverlay").style.display="none";
+      // 切換到角色卡畫面
+      const last=localStorage.getItem("level23LastCharacter");
+      let data=null;
+      if(last){
+        try{data=JSON.parse(last);}catch(e){}
+      }
+      if(data){
+        applyEntryCard(data);
+      }
+      showScreen("screen-entry-card");
+    });
+
+    // === 角色卡畫面套資料 ===
+    function applyEntryCard(data){
+      const charNameEl=document.getElementById("cardCharName");
+      const playerEl=document.getElementById("cardPlayerName");
+      const tribeEl=document.getElementById("cardTribe");
+      const roleEl=document.getElementById("cardRole");
+      const elemEl=document.getElementById("cardElement");
+      const card=document.getElementById("entryCard");
+      if(!data){
+        charNameEl.textContent="尚未建立角色";
+        playerEl.textContent="請先完成角色創建";
+        tribeEl.textContent="-";
+        roleEl.textContent="─";
+        elemEl.textContent="─";
+        return;
+      }
+      charNameEl.textContent=data.charName||"未命名角色";
+      playerEl.textContent=data.playerName||"Player";
+      tribeEl.textContent=data.tribe||"─";
+      roleEl.textContent=data.role||"─";
+      elemEl.textContent=data.element||"─";
+
+      const role=data.role||"";
+      const element=data.element||"";
+      let border="#ffc857";
+      let glow="rgba(255,200,135,.7)";
+
+      if(element.includes("火")){border="#ff6b6b";glow="rgba(255,107,107,.75)";}
+      else if(element.includes("水")){border="#4aaeff";glow="rgba(74,174,255,.75)";}
+      else if(element.includes("風")){border="#7fd5ff";glow="rgba(127,213,255,.75)";}
+      else if(element.includes("土")){border="#c8a15b";glow="rgba(200,161,91,.75)";}
+      else if(element.includes("星")){border="#ffe27a";glow="rgba(255,226,122,.8)";}
+      else if(element.includes("影")){border="#a18bff";glow="rgba(161,139,255,.75)";}
+
+      if(role.includes("釀酒師")) border="#ffc857";
+      else if(role.includes("舞者")) border="#ff80c8";
+      else if(role.includes("守護者")) border="#5be4ff";
+      else if(role.includes("獵人")) border="#78e38f";
+      else if(role.includes("治療者")) border="#b6ffce";
+      else if(role.includes("策士")) border="#c9a4ff";
+      else if(role.includes("旅人")) border="#ffb480";
+      else if(role.includes("自由客")) border="#7af2ff";
+
+      if(card){
+        card.style.borderColor=border;
+        card.style.boxShadow=`0 0 26px ${glow},0 0 34px ${glow}`;
+      }
+    }
+
+    document.getElementById("btnBackToCreate").addEventListener("click",()=>{
+      showScreen("screen-create");
+    });
+
+    // === BGM：同一頁，不會因畫面切換而重播 ===
+    (function(){
+      const bgm=document.getElementById("bgm");
+      if(!bgm) return;
+      bgm.volume=0.15; // 不要太大聲
+      function resumeBgm(){
+        if(bgm.paused){
+          bgm.play().catch(()=>{});
+        }
+      }
+      document.addEventListener("click",resumeBgm,{once:true});
+      document.addEventListener("touchstart",resumeBgm,{once:true});
+    })();
+  </script>
+</body>
+</html>
