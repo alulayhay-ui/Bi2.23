@@ -584,7 +584,7 @@
         <input id="loginName" type="text" placeholder="你的名字" />
 
         <label for="loginPhone">聯絡電話</label>
-        <input id="loginPhone" type="text" placeholder="聯絡方式（手機 / LINE）" />
+        <input id="loginPhone" type="text" placeholder="聯絡方式（手機）" />
 
         <button id="btnLogin" class="btn-primary">提交登入資訊</button>
 
@@ -725,11 +725,12 @@
           </div>
 
           <div class="actions">
-            <button id="btnBackToCreate" class="link-btn">← 回到角色創建</button>
-            <a href="https://www.instagram.com/allhsww/?hl=zh-tw" target="_blank" class="link-btn link-btn-ig">
-              IG｜有問題私訊
-            </a>
-          </div>
+  <button id="btnResetCharacter" class="link-btn">重創角色</button>
+  <button id="btnBackToCreate" class="link-btn">← 回到角色創建</button>
+  <a href="https://www.instagram.com/allhsww/?hl=zh-tw" target="_blank" class="link-btn link-btn-ig">
+    IG｜有問題私訊
+  </a>
+</div>
         </div>
       </section>
     </div>
@@ -848,9 +849,54 @@
       applyElementRoleStyle(el, role);
     }
 
-    document.getElementById("btnStartRitual").addEventListener("click",()=>{
-      showScreen("screen-login");
-    });
+   document.getElementById("btnResetCharacter").addEventListener("click",()=>{
+  // 1. 從角色列表中移除最後一筆
+  const listRaw = localStorage.getItem("level23Characters");
+  if (listRaw) {
+    try {
+      const list = JSON.parse(listRaw);
+      if (Array.isArray(list) && list.length > 0) {
+        list.pop(); // 移除上一個創角
+        localStorage.setItem("level23Characters", JSON.stringify(list));
+      }
+    } catch (e) {
+      console.warn("重創角色時解析角色列表失敗", e);
+    }
+  }
+
+  // 2. 清除「最後角色」記錄
+  localStorage.removeItem("level23LastCharacter");
+
+  // 3. 重置創角表單欄位（保留玩家姓名 & 電話）
+  fields.charName.value = "";
+  fields.tribe.value = "";
+  fields.role.value = "";
+  fields.element.value = "";
+  fields.str.value = "5";
+  fields.int.value = "5";
+  fields.cha.value = "5";
+  fields.luck.value = "5";
+  fields.message.value = "";
+
+  // 4. 清除頭像：狀態 + sessionStorage + 畫面
+  appState.avatarDataUrl = null;
+  try {
+    sessionStorage.removeItem("playerAvatar");
+  } catch (e) {
+    console.warn("清除 playerAvatar 失敗", e);
+  }
+  if (spiritPortrait) {
+    spiritPortrait.src = "assets/characters/default.png"; // 回到預設靈體
+    spiritPortrait.style.opacity = "0.82";
+  }
+
+  // 5. 更新左邊靈體預覽文字
+  updateSpiritPreviewFromForm();
+
+  // 6. 回到創角畫面 & 提示
+  showScreen("screen-create");
+  showToast("已清除上一個角色與頭像，請重新創角。");
+});
 
     const avatarInput=document.getElementById("avatarInput");
     if(avatarInput&&spiritPortrait){
