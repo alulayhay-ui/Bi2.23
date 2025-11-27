@@ -1143,17 +1143,58 @@
         }
 
         updateSpiritPreviewFromForm();
-        showScreen("screen-create");
-        showToast("已清除上一個角色與頭像，請重新創角。");
+showScreen("screen-login");
+showToast("已清除上一個角色與頭像，請重新登入與創角。");
       });
     }
 
-    const backBtn=document.getElementById("btnBackToCreate");
-    if(backBtn){
-      backBtn.addEventListener("click",()=>{
-        showScreen("screen-create");
-      });
+    const resetBtn=document.getElementById("btnResetCharacter");
+if(resetBtn){
+  resetBtn.addEventListener("click",()=>{
+    const listRaw=localStorage.getItem("level23Characters");
+    if(listRaw){
+      try{
+        const list=JSON.parse(listRaw);
+        if(Array.isArray(list)&&list.length>0){
+          list.pop();
+          localStorage.setItem("level23Characters",JSON.stringify(list));
+        }
+      }catch(e){
+        console.warn("重創角色時解析角色列表失敗",e);
+      }
     }
+
+    localStorage.removeItem("level23LastCharacter");
+
+    // 清空創角欄位
+    fields.charName.value="";
+    fields.tribe.value="";
+    fields.role.value="";
+    fields.element.value="";
+    fields.str.value="5";
+    fields.int.value="5";
+    fields.cha.value="5";
+    fields.luck.value="5";
+    fields.message.value="";
+
+    // 清除頭像
+    appState.avatarDataUrl=null;
+    try{
+      sessionStorage.removeItem("playerAvatar");
+    }catch(e){
+      console.warn("清除 playerAvatar 失敗",e);
+    }
+    if(spiritPortrait){
+      spiritPortrait.src="assets/characters/default.png";
+      spiritPortrait.style.opacity="0.82";
+    }
+
+    updateSpiritPreviewFromForm();
+    // 🔁 這裡改成回登入畫面
+    showScreen("screen-login");
+    showToast("已清除上一個角色與頭像，請重新登入與創角。");
+  });
+}
 
     (function(){
       const bgm=document.getElementById("bgm");
